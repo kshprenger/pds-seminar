@@ -2,9 +2,8 @@
 #set text(font: "Terminus (TTF)")
 #show: slides.with(
   title: "Shoal: Improving DAG-BFT Latency and Robustness",
-  subtitle: "Alexander Spiegelman, Rati Gelashvili, Balaji Arun, Zekun Li\nAptos",
-  date: "05.12.2025",
-  authors: ("Konstantin Shprenger"),
+  subtitle: "FC'24",
+  authors: ("Alexander Spiegelman, Rati Gelashvili, Balaji Arun, Zekun Li. Aptos"),
   theme: "full",
   ratio: 16/9,
   layout: "medium",

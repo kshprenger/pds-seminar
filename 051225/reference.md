@@ -1,0 +1,1 @@
+- [Shoal Pipelining](https://arxiv.org/abs/2306.03058)
