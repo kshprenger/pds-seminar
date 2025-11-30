@@ -46,20 +46,25 @@ Global agreement on an infinitely growing sequence of some values.
   return rounds
 }
 
-
 #let create_timelines(validators_num, rounds) = {
   let timelines = ()
   for i in range(0, validators_num) {
-    timelines.push(edge((10,i), ((rounds +2) *10,i), "->"))
+    timelines.push(edge((10,i), ((rounds +2) *10,i), "-"))
   }
   return timelines
 }
 
-#let create_nodes_for_each_round(nodes_per_rounds) = {
+#let create_nodes_for_each_round(nodes_per_rounds, leaders: ()) = {
   let nodes = ()
   for (i, nodes_per_round) in nodes_per_rounds.enumerate() {
     for j in range(0, nodes_per_round){
-      nodes.push(node((20 + i * 10,j), "v", stroke: blue, fill: blue.lighten(70%), shape: rect))
+      let coord = (20 + i * 10, j)
+      let is_special = leaders.any(special => special == coord)
+      if is_special {
+        nodes.push(node(coord, "v", stroke: red, fill: red.lighten(70%), shape: rect))
+      } else {
+        nodes.push(node(coord, "v", stroke: blue, fill: blue.lighten(70%), shape: rect))
+      }
     }
   }
   return nodes
@@ -69,7 +74,7 @@ Global agreement on an infinitely growing sequence of some values.
   let e = ()
   for i in range(0,num_vertex_from){
     for j in range(0,edges_per_origin_vertes){
-      e.push(edge((from_x,i), (to_x,calc.rem((i+j),map_to_vertex_num)), "->", stroke: red))
+      e.push(edge((from_x,i), (to_x,calc.rem((i+j),map_to_vertex_num)), "->", stroke: black))
     }
   }
   return e
@@ -124,7 +129,7 @@ Result:
   ..create_validators(4),
   ..create_rounds(4,8),
   ..create_timelines(4,8),
-  ..create_nodes_for_each_round((4,4,4,4,3,3,3,3)),
+  ..create_nodes_for_each_round((4,4,4,4,3,3,3,3), leaders: ((20,3),(60,2))),
   ..create_uniform_edges(4,3,4,30,20),
   ..create_uniform_edges(4,3,4,40,30),
   ..create_uniform_edges(4,3,4,50,40),
