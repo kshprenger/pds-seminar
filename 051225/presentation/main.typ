@@ -28,79 +28,75 @@ Global agreement on an infinitely growing sequence of some values.
 - Together, all the messages form a DAG that keeps growing – a message is a vertex and its references are edges.
 
 == DAG Example
+
+#let create_validators(validators_num) = {
+  let validators = ()
+  for i in range(0, validators_num) {
+    validators.push(node((10, i), "Validator " + str(i + 1), layer: 1))
+  }
+  return validators
+}
+
+#let create_rounds(validators_num, rounds_num) = {
+  let rounds = ()
+  rounds.push(node((10,validators_num), "Round"))
+  for i in range(1, rounds_num+1) {
+    rounds.push(node((10 + i * 10,validators_num), str(i)))
+  }
+  return rounds
+}
+
+
+#let create_timelines(validators_num, rounds) = {
+  let timelines = ()
+  for i in range(0, validators_num) {
+    timelines.push(edge((10,i), ((rounds +2) *10,i), "->"))
+  }
+  return timelines
+}
+
+#let create_nodes_for_each_round(nodes_per_rounds) = {
+  let nodes = ()
+  for (i, nodes_per_round) in nodes_per_rounds.enumerate() {
+    for j in range(0, nodes_per_round){
+      nodes.push(node((20 + i * 10,j), "v", stroke: blue, fill: blue.lighten(70%), shape: rect))
+    }
+  }
+  return nodes
+}
+
+#let create_uniform_edges(num_vertex_from, edges_per_origin_vertes, map_to_vertex_num, from_x, to_x) = {
+  let e = ()
+  for i in range(0,num_vertex_from){
+    for j in range(0,edges_per_origin_vertes){
+      e.push(edge((from_x,i), (to_x,calc.rem((i+j),map_to_vertex_num)), "->", stroke: red))
+    }
+  }
+  return e
+}
+
+
+#let v1 = ()
+#for i in range(0,2){
+  v1.push(node((20 + i * 10,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect))
+}
+
+#let v234 = ()
+#for i in range(1,4){
+  for j in range(0,4){
+    let n = node((20 + j * 10,i), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect)
+    v234.push(n)
+  }
+}
+
 #align(center)[#diagram(
   spacing: (4pt, 30pt),
-
-  node((10,0), "Validator 1", layer: 1),
-  node((20,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((30,0), $v$, stroke: blue, fill: blue.lighten(70%),shape: rect),
-
-  node((10,1), "Validator 2"),
-  node((20,1), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((30,1), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((40,1), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((50,1), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-
-  node((10,2), "Validator 3"),
-  node((20,2), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((30,2), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((40,2), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((50,2), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-
-
-  node((10,3), "Validator 4"),
-  node((20,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((30,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((40,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((50,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-
- 	edge((10,0), (60,0), "->"),
- 	edge((10,1), (60,1), "->"),
- 	edge((10,2), (60,2), "->"),
- 	edge((10,3), (60,3), "->"),
-
-  // Round 2 -> 1
- 	edge((30,0), (20,0), "->", stroke: red),
- 	edge((30,0), (20,1), "->", stroke: red),
- 	edge((30,0), (20,2), "->", stroke: red),
-
- 	edge((30,1), (20,0), "->", stroke: red),
- 	edge((30,1), (20,1), "->", stroke: red),
- 	edge((30,1), (20,2), "->", stroke: red),
-
-  edge((30,2), (20,0), "->", stroke: red),
- 	edge((30,2), (20,2), "->", stroke: red),
- 	edge((30,2), (20,3), "->", stroke: red),
-
-  edge((30,3), (20,1), "->", stroke: red),
- 	edge((30,3), (20,2), "->", stroke: red),
- 	edge((30,3), (20,3), "->", stroke: red),
-
-  // Round 3 -> 2
-  edge((40,1), (30,0), "->", stroke: red),
- 	edge((40,1), (30,1), "->", stroke: red),
- 	edge((40,1), (30,2), "->", stroke: red),
-
-  edge((40,2), (30,0), "->", stroke: red),
- 	edge((40,2), (30,2), "->", stroke: red),
- 	edge((40,2), (30,3), "->", stroke: red),
-
-  edge((40,3), (30,1), "->", stroke: red),
- 	edge((40,3), (30,2), "->", stroke: red),
- 	edge((40,3), (30,3), "->", stroke: red),
-
-  // Round 4 -> 3
-  edge((50,1), (40,1), "->", stroke: red),
- 	edge((50,1), (40,2), "->", stroke: red),
- 	edge((50,1), (40,3), "->", stroke: red),
-
-  edge((50,2), (40,1), "->", stroke: red),
- 	edge((50,2), (40,2), "->", stroke: red),
- 	edge((50,2), (40,3), "->", stroke: red),
-
-  edge((50,3), (40,1), "->", stroke: red),
- 	edge((50,3), (40,2), "->", stroke: red),
- 	edge((50,3), (40,3), "->", stroke: red),
+  ..create_validators(4),
+  ..create_timelines(4,4),
+  ..create_nodes_for_each_round((4,4,3,3)),
+  ..create_uniform_edges(4,3,4,30,20),
+  ..create_uniform_edges(3,3,4,40,30),
+  ..create_uniform_edges(3,3,3,50,40),
 )
 ]
 
@@ -125,170 +121,20 @@ Result:
 == DAG Waves example
 #align(center)[#diagram(
   spacing: (2pt, 20pt),
-
-  node((10,0), "Validator 1", layer: 1),
-  node((20,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((30,0), $v$, stroke: blue, fill: blue.lighten(70%),shape: rect),
-  node((40,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((50,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((60,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((70,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((80,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((90,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-
-
-  node((10,1), "Validator 2"),
-  node((20,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((30,1), $v$, stroke: blue, fill: blue.lighten(70%),shape: rect),
-  node((40,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((50,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((60,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((70,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((80,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((90,1), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-
-  node((10,2), "Validator 3"),
-  node((20,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((30,2), $v$, stroke: blue, fill: blue.lighten(70%),shape: rect),
-  node((40,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((50,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((60,2), $v$, stroke: red, fill: red.lighten(70%), shape: rect),
-  node((70,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((80,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-  node((90,2), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect),
-
-
-  node((10,3), "Validator 4"),
-  node((20,3), $v$, stroke: red,fill: red.lighten(70%), shape: rect),
-  node((30,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((40,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-  node((50,3), $v$, stroke: blue,fill: blue.lighten(70%), shape: rect),
-
-  // Time lines
- 	edge((10,0), (100,0), "->"),
- 	edge((10,1), (100,1), "->"),
- 	edge((10,2), (100,2), "->"),
- 	edge((10,3), (100,3), "->"),
-
-  node((10,4), "Round"),
-  node((20,4), "1"),
-  node((30,4), "2"),
-  node((40,4), "3"),
-  node((50,4), "4"),
-  node((60,4), "5"),
-  node((70,4), "6"),
-  node((80,4), "7"),
-  node((90,4), "8"),
-
-
-
-
-  // Round 2 -> 1
- 	edge((30,0), (20,0), "->", stroke: red),
- 	edge((30,0), (20,1), "->", stroke: red),
- 	edge((30,0), (20,2), "->", stroke: red),
-
- 	edge((30,1), (20,0), "->", stroke: red),
- 	edge((30,1), (20,1), "->", stroke: red),
- 	edge((30,1), (20,2), "->", stroke: red),
-
-  edge((30,2), (20,0), "->", stroke: red),
- 	edge((30,2), (20,2), "->", stroke: red),
- 	edge((30,2), (20,3), "->", stroke: red),
-
-  edge((30,3), (20,1), "->", stroke: red),
- 	edge((30,3), (20,2), "->", stroke: red),
- 	edge((30,3), (20,3), "->", stroke: red),
-
-  // Round 3 -> 2
-  edge((40,0), (30,0), "->", stroke: red),
- 	edge((40,0), (30,1), "->", stroke: red),
- 	edge((40,0), (30,2), "->", stroke: red),
-
- 	edge((40,1), (30,0), "->", stroke: red),
- 	edge((40,1), (30,1), "->", stroke: red),
- 	edge((40,1), (30,2), "->", stroke: red),
-
-  edge((40,2), (30,0), "->", stroke: red),
- 	edge((40,2), (30,2), "->", stroke: red),
- 	edge((40,2), (30,3), "->", stroke: red),
-
-  edge((40,3), (30,1), "->", stroke: red),
- 	edge((40,3), (30,2), "->", stroke: red),
- 	edge((40,3), (30,3), "->", stroke: red),
-
-  // Round 4 -> 3
-  edge((50,0), (40,0), "->", stroke: red),
- 	edge((50,0), (40,1), "->", stroke: red),
- 	edge((50,0), (40,2), "->", stroke: red),
-
- 	edge((50,1), (40,0), "->", stroke: red),
- 	edge((50,1), (40,1), "->", stroke: red),
- 	edge((50,1), (40,2), "->", stroke: red),
-
-  edge((50,2), (40,0), "->", stroke: red),
- 	edge((50,2), (40,2), "->", stroke: red),
- 	edge((50,2), (40,3), "->", stroke: red),
-
-  edge((50,3), (40,1), "->", stroke: red),
- 	edge((50,3), (40,2), "->", stroke: red),
- 	edge((50,3), (40,3), "->", stroke: red),
-
-
-  // Round 5 -> 4
-  edge((60,0), (50,0), "->", stroke: red),
- 	edge((60,0), (50,1), "->", stroke: red),
- 	edge((60,0), (50,2), "->", stroke: red),
-
- 	edge((60,1), (50,0), "->", stroke: red),
- 	edge((60,1), (50,1), "->", stroke: red),
- 	edge((60,1), (50,2), "->", stroke: red),
-
-  edge((60,2), (50,0), "->", stroke: red),
- 	edge((60,2), (50,1), "->", stroke: red),
- 	edge((60,2), (50,3), "->", stroke: red),
-
-
-  // Round 6 -> 5
-  edge((70,0), (60,0), "->", stroke: red),
- 	edge((70,0), (60,1), "->", stroke: red),
- 	edge((70,0), (60,2), "->", stroke: red),
-
- 	edge((70,1), (60,0), "->", stroke: red),
- 	edge((70,1), (60,1), "->", stroke: red),
- 	edge((70,1), (60,2), "->", stroke: red),
-
-  edge((70,2), (60,0), "->", stroke: red),
- 	edge((70,2), (60,1), "->", stroke: red),
- 	edge((70,2), (60,2), "->", stroke: red),
-
-  // Round 7 -> 6
-  edge((80,0), (70,0), "->", stroke: red),
- 	edge((80,0), (70,1), "->", stroke: red),
- 	edge((80,0), (70,2), "->", stroke: red),
- 	edge((80,1), (70,0), "->", stroke: red),
- 	edge((80,1), (70,1), "->", stroke: red),
- 	edge((80,1), (70,2), "->", stroke: red),
-  edge((80,2), (70,0), "->", stroke: red),
- 	edge((80,2), (70,1), "->", stroke: red),
- 	edge((80,2), (70,2), "->", stroke: red),
-
-  // Round 8 -> 7
-  edge((90,0), (80,0), "->", stroke: red),
- 	edge((90,0), (80,1), "->", stroke: red),
- 	edge((90,0), (80,2), "->", stroke: red),
- 	edge((90,1), (80,0), "->", stroke: red),
- 	edge((90,1), (80,1), "->", stroke: red),
- 	edge((90,1), (80,2), "->", stroke: red),
-  edge((90,2), (80,0), "->", stroke: red),
- 	edge((90,2), (80,1), "->", stroke: red),
- 	edge((90,2), (80,2), "->", stroke: red),
-
+  ..create_validators(4),
+  ..create_rounds(4,8),
+  ..create_timelines(4,8),
+  ..create_nodes_for_each_round((4,4,4,4,3,3,3,3)),
+  ..create_uniform_edges(4,3,4,30,20),
+  ..create_uniform_edges(4,3,4,40,30),
+  ..create_uniform_edges(4,3,4,50,40),
+  ..create_uniform_edges(3,3,4,60,50),
+  ..create_uniform_edges(3,3,3,70,60),
+  ..create_uniform_edges(3,3,3,80,70),
+  ..create_uniform_edges(3,3,3,90,80),
   // Waves
   edge((20,4), (50,4), label: "wave 1", bend: -30deg ),
   edge((60,4), (90,4), label: "wave 2", bend: -30deg ),
-
-
 )
 ]
 
