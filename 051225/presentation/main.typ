@@ -1,33 +1,6 @@
 #import "@preview/diatypst:0.8.0": *
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
-#set text(font: "Terminus (TTF)",size: 16pt)
-#show: slides.with(
-  title: "Shoal: Improving DAG-BFT Latency and Robustness",
-  subtitle: "FC'24",
-  authors: ("Alexander Spiegelman, Rati Gelashvili, Balaji Arun, Zekun Li. Aptos"),
-  theme: "full",
-  ratio: 16/9,
-  layout: "medium",
-  title-color: orange.darken(20%),
-  toc: true,
-)
-
-= Context: DAG-based BFT Consensus
-
-== BFT Consensus
-- N >= 3f+1 validators in total
-- At most f validators are faulty
-
-
-Global agreement on an infinitely growing sequence of some values.
-
-== DAG application
-/ *Idea*: Separate the network communication layer from the consensus logic.
-
-- Each message contains a set of transactions, and a set of references to previous messages.
-- Together, all the messages form a DAG that keeps growing – a message is a vertex and its references are edges.
-
-== DAG Example
+#set text(font: "Terminus (TTF)")
 
 #let create_validators(validators_num) = {
   let validators = ()
@@ -80,19 +53,37 @@ Global agreement on an infinitely growing sequence of some values.
   return e
 }
 
+#show: slides.with(
+  title: "Shoal: Improving DAG-BFT Latency and Robustness",
+  subtitle: "FC'24",
+  authors: ("Alexander Spiegelman, Rati Gelashvili, Balaji Arun, Zekun Li. Aptos"),
+  theme: "full",
+  ratio: 16/9,
+  layout: "medium",
+  title-color: orange.darken(20%),
+  toc: false,
+  count: "dot-section"
+)
 
-#let v1 = ()
-#for i in range(0,2){
-  v1.push(node((20 + i * 10,0), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect))
-}
+#outline(depth: 1)
 
-#let v234 = ()
-#for i in range(1,4){
-  for j in range(0,4){
-    let n = node((20 + j * 10,i), $v$, stroke: blue, fill: blue.lighten(70%), shape: rect)
-    v234.push(n)
-  }
-}
+= Context: DAG-based BFT Consensus
+
+== BFT Consensus
+- N >= 3f+1 validators in total
+- At most f validators are faulty
+
+
+Global agreement on an infinitely growing sequence of some values.
+
+== DAG application
+/ *Idea*: Separate the network communication layer from the consensus logic.
+
+- Each message contains a set of transactions, and a set of references to previous messages.
+- Together, all the messages form a DAG that keeps growing – a message is a vertex and its references are edges.
+
+== DAG Example
+
 
 #align(center)[#diagram(
   spacing: (4pt, 30pt),
@@ -122,6 +113,7 @@ Result:
 - Consensus divided into rounds
 - Rounds groups waves
 - Each wave contains a leader
+- Commit speed not faster than a wave size
 
 == DAG Waves example
 #align(center)[#diagram(
@@ -145,12 +137,50 @@ Result:
 
 = Problem
 
-== First Slide
+== Consensus committig speed
+/ *Problem*: Commit speed is not faster than a wave size
+
+#align(center)[
+#table(
+  columns: 3,
+  [*Protocol*], [*Common case round latency*], [*Async round latency*],
+  [DAG-Rider], [4], [E(6)],
+  [Tusk], [3], [E(7)],
+  [Bullshark], [2], [E(6)],
+)]
 
 = Solution: Pipelining
 
-== First Slide
+== General Algorithm
+#lorem(20)
+
+== Leader reputation
+#lorem(20)
 
 = Evaluation
 
-== First Slide
+== Machine Setup
+- Machines:
+  - t2d-standard-32 type virtual machine
+  - 32 vCPUs, 128GB of memory, up to 10Gbps of network bandwidth.
+- Cluster:
+  - Google Cloud
+  - Machines spread equally across regions: us-west1, europe-west4, asia-east1.
+  - Latencies: us-west1 <-> asia-east1 [118ms]; europe-west4 <-> asia-east1 [251ms]; us-west1 <-> europe-west4 [133ms]
+  - Cluster size (N): 10 (f <= 3); 20 (f <= 6); 50 (f <= 16)
+- Data:
+  - Transactions \~270B in size
+  - Maximum batch size of 5000 transactions
+
+== Latency definition
+
+/ *Latency*: Time elapsed from when a vertex is created from a batch of client transactions to when it is ordered by a validator
+
+== Results: No failures
+#image("eval_no_failures.png")
+
+== Results: With failures
+#image("eval_failures.png")
+
+== Results: Skipping leaders
+#image("eval_skip.png")
