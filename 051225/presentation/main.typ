@@ -77,28 +77,36 @@
 = Context: DAG-based BFT Consensus
 
 == BFT Consensus
+#text(size: 20pt)[
+
 #align(horizon)[
 - N = 3f+1 validators in total
 - At most f validators are faulty
 / *Goal*: Global agreement on an infinitely growing sequence of some values.
-]
+]]
 
 == New way to form consensus
+#text(size: 18pt)[
 #align(horizon)[
   - Historically we have a bunch of protocols which were optimized in the way of reducing communication compexity.
+    - PBFT
+    - Jolteon
+    - ...
     - Hotstuff - 3500 TPS
   - Now we have new generation of protocols
-    - [160kTPS - 600kTPS]
-]
+    - 160kTPS - 600kTPS
+]]
 
 == DAG purpose
+#text(size: 18pt)[
+
 #align(horizon)[
 
 / *Idea*: Separate the network communication layer from the consensus logic.
 
 - Each message contains a set of transactions, and a set of references to previous messages.
 - Together, all the messages form a DAG that keeps growing – a message is a vertex and its references are edges.
-]
+]]
 == DAG Example
 #align(horizon)[
 
@@ -126,14 +134,14 @@ Result:
 
 == Consensus Structure
 #align(horizon)[
-
+#text(size: 20pt)[
 - Interpreting DAG structure as the consensus logic
   - Outcome - local solving
   - No need of any extra communication.
 - Consensus divided into rounds
 - Rounds groups waves
-- Each wave contains a leader
-]
+- Each wave contains predefined leader (Simplified)
+]]
 
 == DAG Waves example [DAG-Rider]
 #align(horizon)[
@@ -174,9 +182,14 @@ Result:
 ]]
 
 == Ordering
+#text(size: 20pt)[
 #align(horizon)[
-- Ordering happens between constructing of each wave; between leaders rounds
-- Larger waves -> larger latency
+- Consists of two phases:
+  1. Each validator determines which leader's vertices to order.
+  2. Sequentially traverse these vertices backwards ordering the rest of vertices.
+- Ordering happens roughly between constructing of each wave (between leader's vertices rounds)
+- Larger waves size -> larger latency
+]
 ]
 
 == Bullshark
@@ -202,10 +215,10 @@ Result:
 
 = Problem
 
-== Consensus committing speed
+== Wave size
 #align(horizon)[
 
-/ *Problem*: Commit(ordering) speed is not faster than a wave constructing latency
+  / *Problem №1*: Sparse leader's vertices.
 
 #align(center)[
 #table(
@@ -215,46 +228,46 @@ Result:
   [Tusk], [3], [E(7)],
   [Bullshark], [2], [E(6)],
 )]
-
 - Ideally we want to commit something each round.
 ]
+
+== Slow leaders
+#align(horizon)[
+  #align(center)[#diagram(
+    spacing: (2pt, 20pt),
+    ..create_validators(4),
+    ..create_rounds(4,6),
+    ..create_timelines(4,8),
+    ..create_nodes_for_each_round((3,3,3,3,3,3), leaders: ((30,1),(70,1))),
+    node((50,3), "v", stroke: red, fill: red.lighten(90%), shape: rect),
+    ..create_uniform_edges(3,3,3,30,20),
+    ..create_uniform_edges(3,3,3,40,30),
+    ..create_uniform_edges(3,3,3,50,40),
+    ..create_uniform_edges(3,3,3,60,50),
+    ..create_uniform_edges(3,3,3,70,60),
+    // Waves
+    edge((20,4), (30,4), label: "wave 1", bend: -30deg ),
+    edge((40,4), (50,4), label: "wave 2", bend: -30deg ),
+    edge((60,4), (70,4), label: "wave 3", bend: -30deg ),
+  )
+]]
 = Solution
 
 == Common protocol structure
 #align(horizon)[
 
-1. Pre-determined leaders each k rounds
-2. Order leaders. Same local ordering on honest validators
+1. Pre-determined leaders each k rounds.
+2. Order leaders. Same local ordering on honest validators.
 3. Order casual histories.
 
 / *Abstract property*: Given a Narwhal-based protocol $PP$, if all honest validators agree on the mapping from rounds to leaders before the beginning of instance $PP$, then they will agree on the first leader each of them orders during execution of $PP$.
 ]
 == Introducing "Shoal"
 #align(horizon)[
-
+#text(size: 20pt)[
 - Protocol agnostic framework
 - Suitable for all Narwhal-based protocols
 / *Idea*: Combine batch of protocols instance in black-box manner.
-]
-== Recall Bullshark
-#align(horizon)[
-#align(center)[#diagram(
-  spacing: (2pt, 20pt),
-  ..create_validators(4),
-  ..create_rounds(4,6),
-  ..create_timelines(4,8),
-  ..create_nodes_for_each_round((4,4,3,3,3,3), leaders: ((30,1),(50,0),(70,2))),
-  ..create_uniform_edges(4,3,4,30,20),
-  ..create_uniform_edges(3,3,4,40,30),
-  ..create_uniform_edges(3,3,3,50,40),
-  ..create_uniform_edges(3,3,3,60,50),
-  ..create_uniform_edges(3,3,3,70,60),
-  // Waves
-  edge((20,4), (30,4), label: "wave 1", bend: -30deg ),
-  edge((40,4), (50,4), label: "wave 2", bend: -30deg ),
-  edge((60,4), (70,4), label: "wave 3", bend: -30deg ),
-
-)
 ]]
 
 == Pipelining algorithm
@@ -270,12 +283,26 @@ Result:
 6: #h(1cm)order L's casual history according to $PP$\
 7: #h(1cm)current_round $<-$ r+1
 ]
+
+== Recall Bullshark
+#align(horizon)[
+#align(center)[#diagram(
+  spacing: (2pt, 20pt),
+  ..create_validators(4),
+  ..create_timelines(4,8),
+  ..create_nodes_for_each_round((4,4,3,3,3,3), leaders: ((30,1),(50,0),(70,2))),
+  ..create_uniform_edges(4,3,4,30,20),
+  ..create_uniform_edges(3,3,4,40,30),
+  ..create_uniform_edges(3,3,3,50,40),
+  ..create_uniform_edges(3,3,3,60,50),
+  ..create_uniform_edges(3,3,3,70,60),
+)
+]]
 == Shoal of Bullsharks
 #align(horizon)[
 #align(center)[#diagram(
   spacing: (2pt, 20pt),
   ..create_validators(4),
-  ..create_rounds(4,6),
   ..create_timelines(4,8),
   ..create_nodes_for_each_round((4,4,3,3,3,3), leaders: ((20,0),(30,1),(40,0),(50,0),(60,1),(70,2))),
   ..create_uniform_edges(4,3,4,30,20),
@@ -287,10 +314,11 @@ Result:
 ]]
 
 == Leader reputation
+#text(size:20pt)[
 #align(horizon)[
 - Byzantine systems are design to tolerate worst-case guarantees.
 - However most common problem is slow leaders.
-]
+]]
 
 == Example of missing leader
 #align(horizon)[
@@ -381,3 +409,11 @@ Result:
 == Results: Skipping leaders
 #align(center)[
   #image("eval_skip.png")]
+
+== Results: total
+#align(horizon)[
+  #text(size: 20pt)[
+    - Up to 40% latency reduction  in failure-free executions
+    - Up to 80% reduction in executions with failures agains vanilla Bullshark
+  ]
+]
