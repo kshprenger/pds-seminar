@@ -66,7 +66,8 @@
   layout: "medium",
   title-color: blue.darken(50%),
   toc: false,
-  count: "dot-section"
+  count: "number",
+  footer: false,
 )
 #set text(size: 15pt)
 
