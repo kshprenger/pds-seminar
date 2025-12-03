@@ -1,9 +1,7 @@
 #import "@preview/diatypst:0.8.0": *
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
-#import "@preview/zebraw:0.6.1": *
 
 #set text(font: "Terminus (TTF)")
-#show: zebraw
 
 
 #let create_validators(validators_num) = {
