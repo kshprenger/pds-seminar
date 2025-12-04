@@ -185,7 +185,7 @@ Result:
 - Consists of two phases:
   1. Each validator determines which leader's vertices to order.
   2. Sequentially traverse these vertices backwards ordering the rest of vertices.
-- Ordering happens roughly between constructing of each wave (between leader's vertices rounds)
+- Ordering happens with roughly linear dependency on wave size
 - Larger waves size -> larger latency
 ]
 ]
