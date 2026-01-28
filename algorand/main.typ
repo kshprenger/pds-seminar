@@ -31,6 +31,7 @@
   - Cryptographic currencies
   - Avoiding centralized authorities
   - Trade-off between latency and confidence
+  - Double spending problem
 
   #progress
 ]
@@ -99,49 +100,95 @@
   - Possible forks
   - Latency problem
   - Scalabillity
+
+  #progress
 ]
 
 
 #slide[
-  == BFT Consensus
+  == Byzantine Consensus
 
   - Predefined set of servers
   - Denial of service attack
   - All to All communication
-  - Scalabillity
+    - Bad Scalabillity
+
+  #progress
+]
+
+#slide[
+  == Example: PBFT
+
+ #image("image/pbft.png", width: 95%)
+
+ #progress
 ]
 
 #slide[
   == Algorand
 
   - New cryptocurrency
-  - Confiramttion in order of minute
+  - Confirmation in order of minute
   - Scallable (No all to all communication)
+
+  #progress
 ]
 
 
 #slide[
   == Algorand: Network structure
 
-  - Dynamic size
-  - Confiramttion in order of minute
+  - Dynamic size network
   - Scallable (No all to all communication)
+  - No predefined set of committee
+
+  #progress
 ]
 
-
-#slide[
-  == Algorand: Key components
-
-]
-
-#slide[
-  == Algorand: Sortition
-
-]
 
 #slide[
   == Algorand: BA\*
 
+  - Proof of Stake
+    - Fraction of the money held by honest users is at least a constant greater than 2/3.
+  - Confirmation in order of minute
+  - No predefined set of committee
+
+#progress
+]
+
+
+
+#slide[
+  == Algorand: Key components
+  - Gossip Network
+  - Cryptographic sortition (for choosing small committee)
+  - BA\*
+  #progress
+]
+
+#slide[
+  == Algorand: Gossip
+  #image("image/gossip.png", width: 70%)
+  #progress
+]
+
+#slide[
+  == Algorand: Block Proposal
+  #image("image/sort.png", width: 70%)
+  #progress
+]
+
+#slide[
+  == Algorand: Sortition
+  #image("image/sort_scary.png", width: 100%)
+  #progress
+]
+
+#slide[
+  == Algorand: Sortition Verification
+  #image("image/sort_verify_scary.png", width: 100%)
+  #progress
 ]
 
 #slide[
