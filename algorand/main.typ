@@ -11,7 +11,7 @@
 }
 
 #set page(paper: "presentation-16-9")
-#set text(size: 25pt)
+#set text(size: 26pt)
 
 
 // Use #slide to create a slide and style it using your favourite Typst functions
@@ -28,10 +28,12 @@
 #slide[
   == Context Introduction
 
+  #align(horizon)[
   - Cryptographic currencies
   - Avoiding centralized authorities
   - Trade-off between latency and confidence
   - Double spending problem
+  ]
 
   #progress
 ]
@@ -161,37 +163,69 @@
 
 #slide[
   == Algorand: Key components
-  - Gossip Network
-  - Cryptographic sortition (for choosing small committee)
-  - BA\*
+  1. Gossip Network
+  2. Cryptographic sortition (for choosing small committee)
+  3. BA\*
   #progress
 ]
 
 #slide[
   == Algorand: Gossip
+  #align(center)[
   #image("image/gossip.png", width: 70%)
+  ]
   #progress
 ]
 
 #slide[
   == Algorand: Block Proposal
-  #image("image/sort.png", width: 70%)
+  #align(center)[
+
+  #image("image/sort.png", width: 70%)]
   #progress
 ]
 
 #slide[
   == Algorand: Sortition
-  #image("image/sort_scary.png", width: 100%)
+  #align(center)[
+
+  #image("image/sort_scary.png", width: 100%)]
   #progress
 ]
 
 #slide[
   == Algorand: Sortition Verification
-  #image("image/sort_verify_scary.png", width: 100%)
+  #align(center)[
+
+  #image("image/sort_verify_scary.png", width: 100%)]
   #progress
 ]
 
 #slide[
-  == Algorand: Evaluation
+  == Algorand: BA\*
+  #align(center)[
 
+  #image("image/ba*.png", width: 90%)]
+  #progress
+]
+
+#slide[
+#align(center)[
+
+  #image("image/latency.png", width: 75%)]
+  #progress
+]
+
+#slide[
+#align(center)[
+
+  #image("image/block.png", width: 75%)]
+  #progress
+]
+
+#slide[
+#align(center)[
+
+  #image("image/mali.png", width: 80%)]
+  #progress
 ]
